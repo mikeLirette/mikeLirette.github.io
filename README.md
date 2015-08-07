@@ -1,3 +1,3 @@
 # jeksite
 
-[Describe the project.]
+This is a learning project. Learning so many things. 
