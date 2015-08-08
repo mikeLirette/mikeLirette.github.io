@@ -34,20 +34,32 @@ gulp.task("jekyll-rebuild", ["jekyll:dev"], function () {
 // don"t end up publishing your drafts or future posts
 gulp.task("jekyll:prod", $.shell.task("jekyll build --config _config.yml,_config.build.yml"));
 
+
 // Compiles the SASS files and moves them into the "assets/stylesheets" directory
-gulp.task("styles", function () {
+//gulp.task("styles", function () {
   // Looks at the style.scss file for what to include and creates a style.css file
-  return gulp.src("src/assets/scss/style.scss")
-    .pipe($.sass())
+//  return gulp.src("src/assets/scss/style.css")
+  //  .pipe($.sass())
     // AutoPrefix your CSS so it works between browsers
-    .pipe($.autoprefixer("last 1 version", { cascade: true }))
+//    .pipe($.autoprefixer("last 1 version", { cascade: true }))
     // Directory your CSS file goes to
-    .pipe(gulp.dest("src/assets/stylesheets/"))
-    .pipe(gulp.dest("serve/assets/stylesheets/"))
+//    .pipe(gulp.dest("src/assets/scss/"))
+//    .pipe(gulp.dest("serve/assets/stylesheets/"))
     // Outputs the size of the CSS file
-    .pipe($.size({title: "styles"}))
+//    .pipe($.size({title: "styles"}))
     // Injects the CSS changes to your browser since Jekyll doesn"t rebuild the CSS
-    .pipe(reload({stream: true}));
+//    .pipe(reload({stream: true}));
+//});
+
+gulp.task("styles" , function () {
+//  return gulp.src('src/assets/stylesheets/style.css')
+    return gulp.src('serve/assets/stylesheets/style.css')
+      .pipe($.sass())
+      .pipe($.autoprefixer("last 1 version", { cascade: true }))
+      .pipe(gulp.dest('_site/css'))
+      .pipe(gulp.dest("serve/assets/stylesheets/"))
+      .pipe($.size({title: "styles"}))
+      .pipe(reload({stream: true}));
 });
 
 // Optimizes the images that exists
@@ -139,7 +151,7 @@ gulp.task("doctor", $.shell.task("jekyll doctor"));
 // between them.
 gulp.task("serve:dev", ["styles", "jekyll:dev"], function () {
   bs = browserSync({
-    notify: true,
+    notify: false,
     // tunnel: "",
     server: {
       baseDir: "serve"
@@ -151,8 +163,9 @@ gulp.task("serve:dev", ["styles", "jekyll:dev"], function () {
 // reload the website accordingly. Update or add other files you need to be watched.
 gulp.task("watch", function () {
   gulp.watch(["src/**/*.md", "src/**/*.html", "src/**/*.xml", "src/**/*.txt", "src/**/*.js"], ["jekyll-rebuild"]);
-  gulp.watch(["serve/assets/stylesheets/*.css"], reload);
-  gulp.watch(["src/assets/scss/**/*.scss"], ["styles"]);
+  gulp.watch(["src/assets/stylesheets/*.css"], reload);
+  gulp.watch(["src/assets/stylesheets/2-modules/*.css"], reload);
+  gulp.watch(["src/assets/stylesheets/*.scss"], ["styles"]);
 });
 
 // Serve the site after optimizations to see that everything looks fine
@@ -167,7 +180,9 @@ gulp.task("serve:prod", function () {
 });
 
 // Default task, run when just writing "gulp" in the terminal
-gulp.task("default", ["serve:dev", "watch"]);
+//gulp.task("default", ["serve:dev", "watch"]);
+gulp.task("default", ["serve:dev", "images", "watch", "styles"]);
+
 
 // Checks your CSS, JS and Jekyll for errors
 gulp.task("check", ["jslint", "doctor"], function () {
